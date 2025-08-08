@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, increment, runTransaction } from "firebase/database";
+import { getDatabase, ref, onValue, runTransaction } from "firebase/database";
 
 // Firebase конфигурация
 const firebaseConfig = {
@@ -26,50 +26,33 @@ function AnimatedText({ text, keyTrigger }) {
   }, [keyTrigger]);
 
   return (
-    <span style={{ display: "inline-block" }}>
+    <span style={{ display: "inline-block", whiteSpace: "nowrap" }}>
       {text.split("").map((char, i) => {
         const randomDelay = (i * 0.07 + Math.random() * 0.05).toFixed(2);
-
         return (
           <span
             key={`${animateKey}-${i}`}
             style={{
               display: "inline-block",
-              margin: char === " " ? "0 6px" : "0 0",
-              backfaceVisibility: "hidden",
-              transformOrigin: "50% 50%",
+              margin: char === " " ? "0 6px" : "0",
               animationName: "rotateLetter",
               animationDuration: "0.85s",
               animationTimingFunction: "ease-in-out",
               animationFillMode: "forwards",
               animationDelay: `${randomDelay}s`,
               color: "white",
-              fontFamily: '"Times New Roman", serif',
-              letterSpacing: "0",
+              fontFamily: '"Times New Roman", serif'
             }}
           >
             {char}
           </span>
         );
       })}
-
       <style jsx>{`
         @keyframes rotateLetter {
-          0% {
-            transform: rotateX(0deg) scale(1);
-            opacity: 1;
-            color: white;
-          }
-          50% {
-            transform: rotateX(90deg) scale(0.8);
-            opacity: 0.6;
-            color: white;
-          }
-          100% {
-            transform: rotateX(0deg) scale(1);
-            opacity: 1;
-            color: white;
-          }
+          0% { transform: rotateX(0deg) scale(1); opacity: 1; }
+          50% { transform: rotateX(90deg) scale(0.8); opacity: 0.6; }
+          100% { transform: rotateX(0deg) scale(1); opacity: 1; }
         }
       `}</style>
     </span>
@@ -89,13 +72,10 @@ export default function Home() {
     en: { welcome: "Welcome to Dimitrov Finance", subtitle: "Your trusted partner in the world of finance." },
   };
 
-  // Брояч на посетители
   useEffect(() => {
     const counterRef = ref(db, "visits");
     runTransaction(counterRef, (current) => (current || 0) + 1);
-    onValue(counterRef, (snapshot) => {
-      setVisits(snapshot.val());
-    });
+    onValue(counterRef, (snapshot) => setVisits(snapshot.val()));
   }, []);
 
   useEffect(() => {
@@ -103,41 +83,33 @@ export default function Home() {
     if (audio) {
       audio.volume = 0.5;
       audio.muted = true;
-      audio.play().catch((e) => console.warn("Автоматичното пускане е блокирано:", e));
+      audio.play().catch(() => {});
     }
   }, []);
 
   const toggleMute = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
-    if (muted) {
-      audio.muted = false;
-      audio.play();
-    } else {
-      audio.muted = true;
-    }
-    setMuted(!muted);
+    audio.muted = !audio.muted;
+    setMuted(audio.muted);
+    if (!audio.muted) audio.play();
   };
 
-  // Автоматична смяна на езика
   useEffect(() => {
     const langs = ["bg", "tr", "en"];
     let index = langs.indexOf(lang);
-
     const interval = setInterval(() => {
       index = (index + 1) % langs.length;
       setLang(langs[index]);
       setKeyTrigger((k) => k + 1);
     }, 9000);
-
     return () => clearInterval(interval);
   }, [lang]);
 
   return (
     <div
       style={{
-        minHeight: "100vh",
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -149,7 +121,7 @@ export default function Home() {
         background: "linear-gradient(270deg, #081116, #415158, #0c161f)",
         backgroundSize: "600% 600%",
         animation: "gradientAnimation 15s ease infinite",
-        position: "relative",
+        overflow: "hidden"
       }}
     >
       <audio ref={audioRef} loop>
@@ -164,15 +136,25 @@ export default function Home() {
           maxWidth: "100%",
           maxHeight: "50vh",
           objectFit: "contain",
-          marginBottom: "20px",
-          transition: "transform 0.3s ease",
+          marginBottom: "20px"
         }}
       />
 
-      <h2 style={{ marginBottom: "10px", fontSize: "1.5rem" }}>
+      <h2
+        style={{
+          marginBottom: "10px",
+          fontSize: "clamp(18px, 3vw, 32px)",
+          whiteSpace: "nowrap"
+        }}
+      >
         <AnimatedText text={texts[lang].welcome} keyTrigger={keyTrigger} />
       </h2>
-      <p style={{ fontSize: "1.2rem" }}>
+      <p
+        style={{
+          fontSize: "clamp(14px, 2vw, 24px)",
+          whiteSpace: "nowrap"
+        }}
+      >
         <AnimatedText text={texts[lang].subtitle} keyTrigger={keyTrigger} />
       </p>
 
@@ -180,7 +162,6 @@ export default function Home() {
         {muted ? "mute" : "unmute"}
       </button>
 
-      {/* Малка цифра за брояч */}
       {visits !== null && (
         <div style={{ position: "fixed", bottom: "10px", right: "10px", fontSize: "12px", opacity: 0.6 }}>
           {visits}
@@ -189,20 +170,13 @@ export default function Home() {
 
       <style jsx>{`
         @keyframes gradientAnimation {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
         .hover-image:hover {
           transform: scale(1.1);
           filter: brightness(1.1);
-          cursor: pointer;
         }
         .mute-button {
           position: fixed;
@@ -217,14 +191,8 @@ export default function Home() {
           animation: pulseBlink 2s infinite ease-in-out;
         }
         @keyframes pulseBlink {
-          0%, 100% {
-            transform: scale(1);
-            opacity: 0.7;
-          }
-          50% {
-            transform: scale(1.1);
-            opacity: 1;
-          }
+          0%, 100% { transform: scale(1); opacity: 0.7; }
+          50% { transform: scale(1.1); opacity: 1; }
         }
       `}</style>
     </div>
