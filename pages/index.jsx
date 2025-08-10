@@ -1,21 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getDatabase, ref, onValue, runTransaction } from "firebase/database";
 
 // Firebase конфигурация
 const firebaseConfig = {
   apiKey: "AIzaSyA9KvcK73x2L2LLVQ-9jHf4SuFJR5cRFic",
   authDomain: "dimitrov-finance-site-counter.firebaseapp.com",
-  databaseURL: "https://dimitrov-finance-site-counter-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL:
+    "https://dimitrov-finance-site-counter-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "dimitrov-finance-site-counter",
   storageBucket: "dimitrov-finance-site-counter.firebasestorage.app",
   messagingSenderId: "378338381483",
   appId: "1:378338381483:web:4a755396620b1dbb3af1ee",
-  measurementId: "G-F9XXKYZMRD"
+  measurementId: "G-F9XXKYZMRD",
 };
 
-// Инициализация на Firebase
-const app = initializeApp(firebaseConfig);
+// Инициализация на Firebase само ако няма друг app
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getDatabase(app);
 
 function AnimatedText({ text, keyTrigger }) {
@@ -40,8 +41,8 @@ function AnimatedText({ text, keyTrigger }) {
               animationTimingFunction: "ease-in-out",
               animationFillMode: "forwards",
               animationDelay: `${randomDelay}s`,
-              color: "white",
-              fontFamily: '"Times New Roman", serif'
+              color: "inherit",
+              fontFamily: '"Times New Roman", serif',
             }}
           >
             {char}
@@ -50,9 +51,18 @@ function AnimatedText({ text, keyTrigger }) {
       })}
       <style jsx>{`
         @keyframes rotateLetter {
-          0% { transform: rotateX(0deg) scale(1); opacity: 1; }
-          50% { transform: rotateX(90deg) scale(0.8); opacity: 0.6; }
-          100% { transform: rotateX(0deg) scale(1); opacity: 1; }
+          0% {
+            transform: rotateX(0deg) scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: rotateX(90deg) scale(0.8);
+            opacity: 0.6;
+          }
+          100% {
+            transform: rotateX(0deg) scale(1);
+            opacity: 1;
+          }
         }
       `}</style>
     </span>
@@ -67,9 +77,30 @@ export default function Home() {
   const [visits, setVisits] = useState(null);
 
   const texts = {
-    bg: { welcome: "Добре дошли в Dimitrov Finance", subtitle: "Вашият доверен партньор в света на финансите." },
-    tr: { welcome: "Dimitrov Finance'a Hoşgeldiniz", subtitle: "Finans dünyasında güvenilir ortağınız." },
-    en: { welcome: "Welcome to Dimitrov Finance", subtitle: "Your trusted partner in the world of finance." },
+    bg: {
+      welcome: "Добре дошли в Dimitrov Finance",
+      subtitle: "Вашият доверен партньор в света на финансите.",
+      trust: "Доверително управление на капитали",
+      contractButton: "Станете клиент – разгледайте договора",
+    },
+    tr: {
+      welcome: "Dimitrov Finance'a Hoşgeldiniz",
+      subtitle: "Finans dünyasında güvenilir ortağınız.",
+      trust: "Sermaye Güvenli Yönetimi",
+      contractButton: "Müşteri olun – sözleşmeyi inceleyin",
+    },
+    en: {
+      welcome: "Welcome to Dimitrov Finance",
+      subtitle: "Your trusted partner in the world of finance.",
+      trust: "Confidential Capital Management",
+      contractButton: "Become a client – view the contract",
+    },
+  };
+
+  const contractLinks = {
+    bg: "/docs/dogovor-bg.pdf",
+    tr: "/docs/dogovor-tr.pdf",
+    en: "/docs/dogovor-en.pdf",
   };
 
   useEffect(() => {
@@ -121,7 +152,9 @@ export default function Home() {
         background: "linear-gradient(270deg, #081116, #415158, #0c161f)",
         backgroundSize: "600% 600%",
         animation: "gradientAnimation 15s ease infinite",
-        overflow: "hidden"
+        overflow: "hidden",
+        position: "relative",
+        fontFamily: "'Times New Roman', serif",
       }}
     >
       <audio ref={audioRef} loop>
@@ -136,7 +169,7 @@ export default function Home() {
           maxWidth: "100%",
           maxHeight: "50vh",
           objectFit: "contain",
-          marginBottom: "20px"
+          marginBottom: "20px",
         }}
       />
 
@@ -144,7 +177,7 @@ export default function Home() {
         style={{
           marginBottom: "10px",
           fontSize: "clamp(18px, 3vw, 32px)",
-          whiteSpace: "nowrap"
+          whiteSpace: "nowrap",
         }}
       >
         <AnimatedText text={texts[lang].welcome} keyTrigger={keyTrigger} />
@@ -152,36 +185,129 @@ export default function Home() {
       <p
         style={{
           fontSize: "clamp(14px, 2vw, 24px)",
-          whiteSpace: "nowrap"
+          whiteSpace: "nowrap",
         }}
       >
         <AnimatedText text={texts[lang].subtitle} keyTrigger={keyTrigger} />
       </p>
 
-      <button onClick={toggleMute} className="mute-button">
+      {/* Анимиран текст в средата долу */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: "10px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          fontSize: "clamp(14px, 2vw, 22px)",
+          whiteSpace: "nowrap",
+          color: "white",
+          fontFamily: '"Times New Roman", serif',
+          pointerEvents: "none",
+          userSelect: "none",
+          zIndex: 5,
+        }}
+      >
+        <AnimatedText text={texts[lang].trust} keyTrigger={keyTrigger} />
+      </div>
+
+      {/* Имейл линк с леко скокче */}
+      <div className="email-icon">
+        <a
+          href="mailto:dimitrov@dimitrovfinance.com"
+          style={{
+            display: "inline-block",
+            position: "relative",
+            width: "100%",
+            height: "100%",
+          }}
+          aria-label="Email Dimitrov Finance"
+        >
+          <img
+            src="/images/email-gold.png"
+            alt="dimitrov@dimitrovfinance.com"
+            style={{
+              height: "100%",
+              width: "auto",
+              display: "block",
+              borderRadius: "8px",
+              position: "relative",
+              zIndex: 1,
+            }}
+          />
+        </a>
+      </div>
+
+      {/* Бутон за договор в горен десен ъгъл със златист цвят, фин черен контур и italic */}
+      <button
+        onClick={() => window.open(contractLinks[lang], "_blank")}
+        style={{
+          position: "fixed",
+          top: "20px",
+          right: "20px",
+          background: "transparent",
+          border: "none",
+          padding: "10px 15px",
+          cursor: "pointer",
+          fontFamily: "'Times New Roman', serif",
+          fontSize: "clamp(16px, 2vw, 20px)",
+          zIndex: 100,
+          whiteSpace: "nowrap",
+          color: "#d69d08",
+          fontStyle: "italic",
+          textShadow: "0 0 2px #000",
+        }}
+        aria-label="Open contract"
+      >
+        <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
+      </button>
+
+      <button
+        onClick={toggleMute}
+        className="mute-button"
+        aria-label={muted ? "Mute audio" : "Unmute audio"}
+      >
         {muted ? "mute" : "unmute"}
       </button>
 
       {visits !== null && (
-        <div style={{ position: "fixed", bottom: "10px", right: "10px", fontSize: "12px", opacity: 0.6 }}>
+        <div className="visits-counter" aria-live="polite">
           {visits}
         </div>
       )}
 
       <style jsx>{`
         @keyframes gradientAnimation {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
         }
+
+        @keyframes bounce {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-6px);
+          }
+        }
+
         .hover-image:hover {
           transform: scale(1.1);
           filter: brightness(1.1);
+          transition: transform 0.3s ease, filter 0.3s ease;
         }
+
         .mute-button {
           position: fixed;
-          bottom: 20px;
-          right: 40px;
+          right: 10px;
+          bottom: 30px; /* временно, ще override в следващите два реда */
           background: transparent;
           color: white;
           border: none;
@@ -189,10 +315,60 @@ export default function Home() {
           cursor: pointer;
           opacity: 0.8;
           animation: pulseBlink 2s infinite ease-in-out;
+          z-index: 11;
+          user-select: none;
+
+          /* Позициониране над брояча */
+          bottom: 30px; /* ще коригираме за точна позиция по-долу */
         }
+
+        .visits-counter {
+          position: fixed;
+          bottom: 10px;
+          right: 10px;
+          font-size: 12px;
+          opacity: 0.6;
+          user-select: none;
+          z-index: 10;
+        }
+
+        /* Позиционираме mute точно над брояча без разстояние */
+        .mute-button {
+          bottom: 30px; /* 20px над брояча (който е на 10px) + височина ~14px + малко */
+        }
+
         @keyframes pulseBlink {
-          0%, 100% { transform: scale(1); opacity: 0.7; }
-          50% { transform: scale(1.1); opacity: 1; }
+          0%,
+          100% {
+            transform: scale(1);
+            opacity: 0.7;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 1;
+          }
+        }
+
+        .email-icon {
+          position: fixed;
+          bottom: 10px;
+          left: 10px;
+          cursor: pointer;
+          z-index: 10;
+          width: clamp(30px, 2.5vw, 40px);
+          height: clamp(30px, 2.5vw, 40px);
+          overflow: visible;
+          border-radius: 8px;
+          animation: bounce 2s infinite ease-in-out;
+        }
+
+        @media (max-width: 600px) {
+          .email-icon {
+            bottom: 50px; /* малко над текста доверително управление на капитали */
+            left: 15%;
+            width: clamp(40px, 6vw, 60px);
+            height: clamp(40px, 6vw, 60px);
+          }
         }
       `}</style>
     </div>
