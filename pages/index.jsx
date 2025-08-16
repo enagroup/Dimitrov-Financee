@@ -9,7 +9,7 @@ const firebaseConfig = {
   databaseURL:
     "https://dimitrov-finance-site-counter-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "dimitrov-finance-site-counter",
-  storageBucket: "dimitrov-finance-site-counter.firebasestorage.app",
+  storageBucket: "dimitrov-finance-site-counter.appspot.com",
   messagingSenderId: "378338381483",
   appId: "1:378338381483:web:4a755396620b1dbb3af1ee",
   measurementId: "G-F9XXKYZMRD",
@@ -103,12 +103,14 @@ export default function Home() {
     en: "/docs/dogovor-en.pdf",
   };
 
+  // Firebase брояч
   useEffect(() => {
     const counterRef = ref(db, "visits");
     runTransaction(counterRef, (current) => (current || 0) + 1);
     onValue(counterRef, (snapshot) => setVisits(snapshot.val()));
   }, []);
 
+  // Инициализация на аудио
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -126,6 +128,7 @@ export default function Home() {
     if (!audio.muted) audio.play();
   };
 
+  // Смяна на език автоматично
   useEffect(() => {
     const langs = ["bg", "tr", "en"];
     let index = langs.indexOf(lang);
@@ -141,6 +144,7 @@ export default function Home() {
     <div
       style={{
         height: "100vh",
+        width: "100vw",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -209,7 +213,6 @@ export default function Home() {
         <AnimatedText text={texts[lang].trust} keyTrigger={keyTrigger} />
       </div>
 
-      {/* Мейл бутон */}
       <div className="email-icon">
         <a
           href="mailto:dimitrov@dimitrovfinance.com"
@@ -236,42 +239,28 @@ export default function Home() {
         </a>
       </div>
 
-     <button
-  onClick={() => window.open(contractLinks[lang], "_blank")}
-  className="contract-button"
-  aria-label="Open contract"
->
-  <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
-</button>
-
-<style jsx>{`
-  .contract-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-family: 'Times New Roman', serif;
-    font-size: clamp(16px, 2vw, 20px);
-    z-index: 100;
-    white-space: nowrap;
-    color: #d69d08;
-    font-style: italic;
-    text-shadow: 0 0 2px #000;
-  }
-
-  @media (max-width: 600px) {
-    .contract-button {
-      left: 50%;
-      right: auto;           /* махаме десния маргин */
-      transform: translateX(-50%); /* центрираме бутонa */
-      top: 15px;             /* можем да сместим малко надолу, ако е нужно */
-      text-align: center;
-    }
-  }
-`}</style>
+      <button
+        onClick={() => window.open(contractLinks[lang], "_blank")}
+        style={{
+          position: "fixed",
+          top: "20px",
+          right: "20px",
+          background: "transparent",
+          border: "none",
+          padding: "10px 15px",
+          cursor: "pointer",
+          fontFamily: "'Times New Roman', serif",
+          fontSize: "clamp(16px, 2vw, 20px)",
+          zIndex: 100,
+          whiteSpace: "nowrap",
+          color: "#d69d08",
+          fontStyle: "italic",
+          textShadow: "0 0 2px #000",
+        }}
+        aria-label="Open contract"
+      >
+        <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
+      </button>
 
       <button
         onClick={toggleMute}
@@ -297,6 +286,14 @@ export default function Home() {
       )}
 
       <style jsx>{`
+        html, body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          height: 100%;
+          width: 100%;
+        }
+
         @keyframes gradientAnimation {
           0% {
             background-position: 0% 50%;
@@ -354,8 +351,8 @@ export default function Home() {
 
         .email-icon {
           position: fixed;
-          bottom: 1%; /* долу на десктоп */
-          left: 2%;   /* вляво на десктоп */
+          bottom: 1%;
+          left: 2%;
           cursor: pointer;
           z-index: 10;
           width: clamp(30px, 2.5vw, 40px);
@@ -366,8 +363,8 @@ export default function Home() {
 
         @media (max-width: 600px) {
           .email-icon {
-            bottom: 60px;       /* мобилен долу по-нависоко */
-            left: 15%;          /* центриран */
+            bottom: 60px;
+            left: 15%;
             transform: translateX(-50%);
             width: clamp(40px, 6vw, 60px);
             height: clamp(40px, 6vw, 60px);
