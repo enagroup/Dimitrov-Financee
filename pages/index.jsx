@@ -170,17 +170,28 @@ export default function Home() {
       </audio>
 
       <img
-        src="/zaglavna.jpg"
-        alt="Заглавна снимка"
-        className="hover-image"
-        style={{
-          maxWidth: "100%",
-          maxHeight: "50vh",
-          objectFit: "contain",
-          marginBottom: "20px",
-        }}
-      />
+  src="/zaglavna.jpg"
+  alt="Заглавна снимка"
+  className="hover-image"
+  style={{
+    width: "auto",
+    height: "50vh",        // за мобилни екрани може да се намали чрез медия query
+    maxWidth: "90%",       // не позволява изображението да излезе извън екрана
+    objectFit: "contain",
+    marginBottom: "20px",
+    pointerEvents: "none", // предотвратява скрол чрез докосване
+    touchAction: "none",
+    userSelect: "none",
+  }}
+/>
 
+<style jsx>{`
+  @media (max-width: 600px) {
+    .hover-image {
+      height: 40vh; /* намалено за мобилни екрани */
+    }
+  }
+`}</style>
       <h2
         style={{
           marginBottom: "10px",
