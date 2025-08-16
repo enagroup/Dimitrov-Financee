@@ -142,6 +142,7 @@ export default function Home() {
 
   return (
     <div
+      className="main-container"
       style={{
         height: "100vh",
         width: "100vw",
@@ -156,9 +157,12 @@ export default function Home() {
         background: "linear-gradient(270deg, #081116, #415158, #0c161f)",
         backgroundSize: "600% 600%",
         animation: "gradientAnimation 15s ease infinite",
-        overflow: "hidden",
         position: "relative",
         fontFamily: "'Times New Roman', serif",
+        overflow: "hidden",
+        touchAction: "none",
+        overscrollBehavior: "none",
+        userSelect: "none",
       }}
     >
       <audio ref={audioRef} loop>
@@ -286,14 +290,6 @@ export default function Home() {
       )}
 
       <style jsx>{`
-        html, body {
-          margin: 0;
-          padding: 0;
-          overflow: hidden;
-          height: 100%;
-          width: 100%;
-        }
-
         @keyframes gradientAnimation {
           0% {
             background-position: 0% 50%;
