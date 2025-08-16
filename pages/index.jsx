@@ -236,28 +236,42 @@ export default function Home() {
         </a>
       </div>
 
-      <button
-        onClick={() => window.open(contractLinks[lang], "_blank")}
-        style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
-          background: "transparent",
-          border: "none",
-          padding: "10px 15px",
-          cursor: "pointer",
-          fontFamily: "'Times New Roman', serif",
-          fontSize: "clamp(16px, 2vw, 20px)",
-          zIndex: 100,
-          whiteSpace: "nowrap",
-          color: "#d69d08",
-          fontStyle: "italic",
-          textShadow: "0 0 2px #000",
-        }}
-        aria-label="Open contract"
-      >
-        <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
-      </button>
+     <button
+  onClick={() => window.open(contractLinks[lang], "_blank")}
+  className="contract-button"
+  aria-label="Open contract"
+>
+  <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
+</button>
+
+<style jsx>{`
+  .contract-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-family: 'Times New Roman', serif;
+    font-size: clamp(16px, 2vw, 20px);
+    z-index: 100;
+    white-space: nowrap;
+    color: #d69d08;
+    font-style: italic;
+    text-shadow: 0 0 2px #000;
+  }
+
+  @media (max-width: 600px) {
+    .contract-button {
+      left: 50%;
+      right: auto;           /* махаме десния маргин */
+      transform: translateX(-50%); /* центрираме бутонa */
+      top: 15px;             /* можем да сместим малко надолу, ако е нужно */
+      text-align: center;
+    }
+  }
+`}</style>
 
       <button
         onClick={toggleMute}
