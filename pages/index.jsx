@@ -191,7 +191,6 @@ export default function Home() {
         <AnimatedText text={texts[lang].subtitle} keyTrigger={keyTrigger} />
       </p>
 
-      {/* Анимиран текст в средата долу */}
       <div
         style={{
           position: "fixed",
@@ -210,7 +209,7 @@ export default function Home() {
         <AnimatedText text={texts[lang].trust} keyTrigger={keyTrigger} />
       </div>
 
-      {/* Имейл линк с леко скокче */}
+      {/* Мейл бутон */}
       <div className="email-icon">
         <a
           href="mailto:dimitrov@dimitrovfinance.com"
@@ -237,7 +236,6 @@ export default function Home() {
         </a>
       </div>
 
-      {/* Бутон за договор в горен десен ъгъл със златист цвят, фин черен контур и italic */}
       <button
         onClick={() => window.open(contractLinks[lang], "_blank")}
         style={{
@@ -342,21 +340,21 @@ export default function Home() {
 
         .email-icon {
           position: fixed;
-          bottom: 10px;
-          left: 10px;
+          bottom: 1%; /* долу на десктоп */
+          left: 2%;   /* вляво на десктоп */
           cursor: pointer;
           z-index: 10;
           width: clamp(30px, 2.5vw, 40px);
           height: clamp(30px, 2.5vw, 40px);
-          overflow: visible;
           border-radius: 8px;
           animation: bounce 2s infinite ease-in-out;
         }
 
         @media (max-width: 600px) {
           .email-icon {
-            bottom: 50px; /* малко над текста доверително управление на капитали */
-            left: 15%;
+            bottom: 60px;       /* мобилен долу по-нависоко */
+            left: 50%;          /* центриран */
+            transform: translateX(-50%);
             width: clamp(40px, 6vw, 60px);
             height: clamp(40px, 6vw, 60px);
           }
