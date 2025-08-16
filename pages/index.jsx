@@ -175,7 +175,7 @@ export default function Home() {
   className="hover-image"
   style={{
     width: "auto",
-    height: "50vh",        // за мобилни екрани може да се намали чрез медия query
+    height: "50vh",        // стандартна височина за десктоп
     maxWidth: "90%",       // не позволява изображението да излезе извън екрана
     objectFit: "contain",
     marginBottom: "20px",
@@ -188,7 +188,8 @@ export default function Home() {
 <style jsx>{`
   @media (max-width: 600px) {
     .hover-image {
-      height: 40vh; /* намалено за мобилни екрани */
+      height: 30vh; /* намалено за мобилни екрани */
+      max-width: 80%; /* ограничение на ширината за по-добро позициониране */
     }
   }
 `}</style>
