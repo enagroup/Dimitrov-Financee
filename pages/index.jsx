@@ -160,44 +160,59 @@ export default function Home() {
         position: "relative",
         fontFamily: "'Times New Roman', serif",
         overflow: "hidden",
-        touchAction: "none",
-        overscrollBehavior: "none",
-        userSelect: "none",
       }}
     >
       <audio ref={audioRef} loop>
         <source src="/sounds/background.mp3" type="audio/mpeg" />
       </audio>
 
+      {/* Изображение */}
       <img
-  src="/zaglavna.jpg"
-  alt="Заглавна снимка"
-  className="hover-image"
-  style={{
-    width: "auto",
-    height: "50vh",        // стандартна височина за десктоп
-    maxWidth: "90%",       // не позволява изображението да излезе извън екрана
-    objectFit: "contain",
-    marginBottom: "20px",
-    pointerEvents: "none", // предотвратява скрол чрез докосване
-    touchAction: "none",
-    userSelect: "none",
-  }}
-/>
+        src="/zaglavna.jpg"
+        alt="Заглавна снимка"
+        className="hover-image"
+        style={{
+          width: "auto",
+          height: "50vh",
+          maxWidth: "90%",
+          objectFit: "contain",
+          marginBottom: "20px",
+          pointerEvents: "none",
+          userSelect: "none",
+          zIndex: 1,
+        }}
+      />
 
-<style jsx>{`
-  @media (max-width: 600px) {
-    .hover-image {
-      height: 30vh; /* намалено за мобилни екрани */
-      max-width: 80%; /* ограничение на ширината за по-добро позициониране */
-    }
-  }
-`}</style>
+      {/* Бутон „Станете клиент“ над изображението */}
+      <button
+  onClick={() => window.open(contractLinks[lang], "_blank")}
+  style={{
+    position: "fixed",
+    top: "20px",
+    right: "20px",
+    background: "transparent",
+    border: "none",
+    padding: "10px 15px",
+    cursor: "pointer",
+    fontFamily: "'Times New Roman', serif",
+    fontSize: "clamp(16px, 2vw, 20px)",
+    zIndex: 100,
+    whiteSpace: "nowrap",
+    color: "#d69d08",
+    fontStyle: "italic",
+    textShadow: "0 0 2px #000",
+  }}
+  aria-label="Open contract"
+>
+  <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
+</button>
+      {/* Заглавен текст */}
       <h2
         style={{
           marginBottom: "10px",
           fontSize: "clamp(18px, 3vw, 32px)",
           whiteSpace: "nowrap",
+          zIndex: 2,
         }}
       >
         <AnimatedText text={texts[lang].welcome} keyTrigger={keyTrigger} />
@@ -206,11 +221,13 @@ export default function Home() {
         style={{
           fontSize: "clamp(14px, 2vw, 24px)",
           whiteSpace: "nowrap",
+          zIndex: 2,
         }}
       >
         <AnimatedText text={texts[lang].subtitle} keyTrigger={keyTrigger} />
       </p>
 
+      {/* Доверие */}
       <div
         style={{
           position: "fixed",
@@ -229,55 +246,26 @@ export default function Home() {
         <AnimatedText text={texts[lang].trust} keyTrigger={keyTrigger} />
       </div>
 
+      {/* Икона за мейл */}
       <div className="email-icon">
         <a
           href="mailto:dimitrov@dimitrovfinance.com"
-          style={{
-            display: "inline-block",
-            position: "relative",
-            width: "100%",
-            height: "100%",
-          }}
           aria-label="Email Dimitrov Finance"
         >
           <img
             src="/images/email-gold.png"
             alt="dimitrov@dimitrovfinance.com"
             style={{
-              height: "100%",
+              height: "50px",
               width: "auto",
               display: "block",
               borderRadius: "8px",
-              position: "relative",
-              zIndex: 1,
             }}
           />
         </a>
       </div>
 
-      <button
-        onClick={() => window.open(contractLinks[lang], "_blank")}
-        style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
-          background: "transparent",
-          border: "none",
-          padding: "10px 15px",
-          cursor: "pointer",
-          fontFamily: "'Times New Roman', serif",
-          fontSize: "clamp(16px, 2vw, 20px)",
-          zIndex: 100,
-          whiteSpace: "nowrap",
-          color: "#d69d08",
-          fontStyle: "italic",
-          textShadow: "0 0 2px #000",
-        }}
-        aria-label="Open contract"
-      >
-        <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
-      </button>
-
+      {/* Бутон mute/unmute */}
       <button
         onClick={toggleMute}
         className="mute-button"
@@ -286,6 +274,7 @@ export default function Home() {
         {muted ? "mute" : "unmute"}
       </button>
 
+      {/* Брой посещения */}
       {visits !== null && (
         <div
           style={{
@@ -315,13 +304,8 @@ export default function Home() {
         }
 
         @keyframes bounce {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-6px);
-          }
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
         }
 
         .hover-image:hover {
@@ -346,38 +330,37 @@ export default function Home() {
         }
 
         @keyframes pulseBlink {
-          0%,
-          100% {
-            transform: scale(1);
-            opacity: 0.7;
-          }
-          50% {
-            transform: scale(1.1);
-            opacity: 1;
-          }
+          0%, 100% { transform: scale(1); opacity: 0.7; }
+          50% { transform: scale(1.1); opacity: 1; }
         }
 
         .email-icon {
           position: fixed;
-          bottom: 1%;
+          bottom: 10px;
           left: 2%;
           cursor: pointer;
           z-index: 10;
-          width: clamp(30px, 2.5vw, 40px);
-          height: clamp(30px, 2.5vw, 40px);
+          width: auto;
+          height: auto;
+        }
+
+        .email-icon img {
+          width: 50px;
+          height: auto;
           border-radius: 8px;
           animation: bounce 2s infinite ease-in-out;
         }
 
         @media (max-width: 600px) {
-          .email-icon {
-            bottom: 60px;
-            left: 15%;
-            transform: translateX(-50%);
-            width: clamp(40px, 6vw, 60px);
-            height: clamp(40px, 6vw, 60px);
-          }
-        }
+  .email-icon {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+  }
+}
       `}</style>
     </div>
   );
