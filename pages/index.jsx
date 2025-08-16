@@ -15,7 +15,6 @@ const firebaseConfig = {
   measurementId: "G-F9XXKYZMRD",
 };
 
-// Инициализация на Firebase само ако няма друг app
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getDatabase(app);
 
@@ -28,27 +27,24 @@ function AnimatedText({ text, keyTrigger }) {
 
   return (
     <span style={{ display: "inline-block", whiteSpace: "nowrap" }}>
-      {text.split("").map((char, i) => {
-        const randomDelay = (i * 0.07 + Math.random() * 0.05).toFixed(2);
-        return (
-          <span
-            key={`${animateKey}-${i}`}
-            style={{
-              display: "inline-block",
-              margin: char === " " ? "0 6px" : "0",
-              animationName: "rotateLetter",
-              animationDuration: "0.85s",
-              animationTimingFunction: "ease-in-out",
-              animationFillMode: "forwards",
-              animationDelay: `${randomDelay}s`,
-              color: "inherit",
-              fontFamily: '"Times New Roman", serif',
-            }}
-          >
-            {char}
-          </span>
-        );
-      })}
+      {text.split("").map((char, i) => (
+        <span
+          key={`${animateKey}-${i}`}
+          style={{
+            display: "inline-block",
+            margin: char === " " ? "0 6px" : "0",
+            animationName: "rotateLetter",
+            animationDuration: "0.85s",
+            animationTimingFunction: "ease-in-out",
+            animationFillMode: "forwards",
+            animationDelay: `${(i * 0.07 + Math.random() * 0.05).toFixed(2)}s`,
+            color: "inherit",
+            fontFamily: '"Times New Roman", serif',
+          }}
+        >
+          {char}
+        </span>
+      ))}
       <style jsx>{`
         @keyframes rotateLetter {
           0% {
@@ -103,10 +99,18 @@ export default function Home() {
     en: "/docs/dogovor-en.pdf",
   };
 
+  const wikiLinks = {
+    bg: "https://en.wikipedia.org/wiki/Asset_management",
+    tr: "https://tr.wikipedia.org/wiki/Varl%C4%B1k_y%C3%B6netimi",
+    en: "https://en.wikipedia.org/wiki/Asset_management",
+  };
+
   // Firebase брояч
   useEffect(() => {
     const counterRef = ref(db, "visits");
-    runTransaction(counterRef, (current) => (current || 0) + 1);
+    runTransaction(counterRef, (current) => (current || 0) + 1).catch((err) =>
+      console.error("Counter update failed:", err)
+    );
     onValue(counterRef, (snapshot) => setVisits(snapshot.val()));
   }, []);
 
@@ -131,275 +135,222 @@ export default function Home() {
   // Смяна на език автоматично
   useEffect(() => {
     const langs = ["bg", "tr", "en"];
-    let index = langs.indexOf(lang);
+    let index = 0;
     const interval = setInterval(() => {
       index = (index + 1) % langs.length;
       setLang(langs[index]);
       setKeyTrigger((k) => k + 1);
     }, 9000);
     return () => clearInterval(interval);
-  }, [lang]);
+  }, []);
+
+  const handleWikiClick = () => {
+    window.open(wikiLinks[lang], "_blank");
+  };
 
   return (
-    <div
-      className="main-container"
-      style={{
-        height: "100vh",
-        width: "100vw",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-        padding: "20px",
-        boxSizing: "border-box",
-        color: "white",
-        background: "linear-gradient(270deg, #081116, #415158, #0c161f)",
-        backgroundSize: "600% 600%",
-        animation: "gradientAnimation 15s ease infinite",
-        position: "relative",
-        fontFamily: "'Times New Roman', serif",
-        overflow: "hidden",
-      }}
-    >
+    <div className="main-container">
       <audio ref={audioRef} loop>
         <source src="/sounds/background.mp3" type="audio/mpeg" />
       </audio>
 
-      {/* Бутон „Станете клиент“ над изображението */}
+      {/* Бутон „Станете клиент“ */}
       <button
         onClick={() => window.open(contractLinks[lang], "_blank")}
         className="contract-button"
-        style={{
-          position: "fixed",       // фиксирано спрямо прозореца
-          top: "20px",             // разстояние от горния край
-          right: "20px",           // разстояние от десния край
-          background: "transparent",
-          border: "none",
-          padding: "10px 15px",
-          cursor: "pointer",
-          fontFamily: "'Times New Roman', serif",
-          fontSize: "clamp(16px, 2vw, 20px)",
-          zIndex: 100,             // винаги над другите елементи
-          whiteSpace: "nowrap",
-          color: "#d69d08",
-          fontStyle: "italic",
-          textShadow: "0 0 2px #000",
-        }}
-        aria-label="Open contract"
       >
         <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
       </button>
 
-      {/* ЕДНО изображение */}
-      <img
-        src="/zaglavna.jpg"
-        alt="Заглавна снимка"
-        className="hover-image"
-        style={{
-          width: "auto",
-          height: "50vh",
-          maxWidth: "90%",
-          objectFit: "contain",
-          marginBottom: "20px",
-          pointerEvents: "none",
-          userSelect: "none",
-          zIndex: 1,
-        }}
-      />
+      {/* Изображение */}
+      <img src="/zaglavna.jpg" alt="Заглавна снимка" className="main-image" />
 
-      <style jsx>{`
-        @media (max-width: 600px) {
-          .hover-image {
-            order: 2; /* изображението пада надолу */
-            margin-top: 15px;
-          }
-
-          .contract-button {
-            position: relative !important;
-            top: auto !important;
-            right: auto !important;
-            margin-top: 15px;
-          }
-
-          .main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-        }
-      `}</style>
-
-      {/* Заглавен текст */}
-      <h2
-        style={{
-          marginBottom: "10px",
-          fontSize: "clamp(18px, 3vw, 32px)",
-          whiteSpace: "nowrap",
-          zIndex: 2,
-        }}
-      >
+      {/* Текстове с линк към Wikipedia */}
+      <h2 onClick={handleWikiClick} style={{ cursor: "pointer" }}>
         <AnimatedText text={texts[lang].welcome} keyTrigger={keyTrigger} />
       </h2>
-      <p
-        style={{
-          fontSize: "clamp(14px, 2vw, 24px)",
-          whiteSpace: "nowrap",
-          zIndex: 2,
-        }}
-      >
+      <p onClick={handleWikiClick} style={{ cursor: "pointer" }}>
         <AnimatedText text={texts[lang].subtitle} keyTrigger={keyTrigger} />
       </p>
 
-      {/* Доверие */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: "10px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          fontSize: "clamp(14px, 2vw, 22px)",
-          whiteSpace: "nowrap",
-          color: "white",
-          fontFamily: '"Times New Roman", serif',
-          pointerEvents: "none",
-          userSelect: "none",
-          zIndex: 5,
-        }}
-      >
-        <AnimatedText text={texts[lang].trust} keyTrigger={keyTrigger} />
+      {/* Доверие с линк към Wikipedia */}
+      <div className="trust-text">
+        <a
+          href={wikiLinks[lang]}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <AnimatedText text={texts[lang].trust} keyTrigger={keyTrigger} />
+        </a>
       </div>
 
-      {/* Икона за мейл */}
-      <div className="email-icon">
-  <a href="mailto:dimitrov@dimitrovfinance.com" aria-label="Email Dimitrov Finance">
-    <img
-      src="/images/email-gold.png"
-      alt="dimitrov@dimitrovfinance.com"
-      style={{
-        height: "50px",
-        width: "auto",
-        display: "block",
-        borderRadius: "8px",
-      }}
-    />
-  </a>
-</div>
-
-<style jsx>{`
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-
-  .email-icon {
-    position: fixed;
-    bottom: 10px;
-    left: 10px; /* винаги вляво */
-    cursor: pointer;
-    z-index: 10;
-    width: auto;
-    height: auto;
-  }
-
-  .email-icon img {
-    width: 50px;
-    height: auto;
-    border-radius: 8px;
-    animation: bounce 2s infinite ease-in-out;
-  }
-
-  @media (max-width: 600px) {
-    .email-icon {
-      position: relative !important;
-      bottom: auto !important;
-      left: auto !important;
-      margin-top: 15px;
-      display: flex;
-      justify-content: center;
-    }
-  }
-`}</style>
+      {/* Мейл бутон */}
+      <div className="email-button">
+        <a href="mailto:dimitrov@dimitrovfinance.com" aria-label="Email Dimitrov Finance">
+          <img src="/images/email-gold.png" alt="Email" />
+        </a>
+      </div>
 
       {/* Бутон mute/unmute */}
-      <button
-        onClick={toggleMute}
-        className="mute-button"
-        aria-label={muted ? "Mute audio" : "Unmute audio"}
-      >
-        {muted ? "mute" : "unmute"}
+      <button className="mute-button" onClick={toggleMute}>
+        {muted ? "unmute" : "mute"}
       </button>
 
-      {/* Брой посещения */}
-      {visits !== null && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "10px",
-            right: "10px",
-            fontSize: "12px",
-            opacity: 0.6,
-            userSelect: "none",
-          }}
-        >
-          {visits}
-        </div>
-      )}
+      {/* Брояч */}
+      <div className="counter">{visits ?? "..."}</div>
 
       <style jsx>{`
-        @keyframes gradientAnimation {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
+        .main-container {
+          height: 100vh;
+          width: 100vw;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          padding: 20px;
+          box-sizing: border-box;
+          color: white;
+          background: linear-gradient(270deg, #081116, #415158, #0c161f);
+          background-size: 600% 600%;
+          animation: gradientAnimation 15s ease infinite;
+          font-family: "Times New Roman", serif;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .main-image {
+          width: auto;
+          height: 50vh;
+          max-width: 90%;
+          object-fit: contain;
+          margin-bottom: 20px;
+          pointer-events: none;
+          user-select: none;
+          z-index: 1;
+        }
+
+        h2 {
+          margin-bottom: 10px;
+          font-size: 32px;
+          white-space: nowrap;
+          z-index: 2;
+        }
+
+        p {
+          font-size: 24px;
+          white-space: nowrap;
+          z-index: 2;
+        }
+
+        .contract-button {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: transparent;
+          border: none;
+          padding: 10px 15px;
+          cursor: pointer;
+          font-family: "Times New Roman", serif;
+          font-size: 20px;
+          z-index: 100;
+          color: #d69d08; /* оригинален златен цвят */
+          font-style: italic;
+          text-shadow: 0 0 2px #000;
+        }
+
+        .trust-text {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  white-space: nowrap;
+  pointer-events: auto;
+  z-index: 5;
+  color: #ffffff; /* белият цвят за доверително управление */
+}
+
+.trust-text a {
+  text-decoration: underline;
+  color: inherit;
+}
+
+        .email-button {
+          position: fixed;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 5;
+        }
+
+        .email-button img {
+          height: 40px;
+          width: auto;
+          border-radius: 8px;
+          animation: bounceEmail 2s infinite;
+        }
+
+        @media (min-width: 769px) {
+          .email-button {
+            left: 20px;
+            transform: none;
           }
         }
 
-        @keyframes bounce {
-          0%,
-          100% {
+        @keyframes bounceEmail {
+          0%, 100% {
             transform: translateY(0);
           }
           50% {
-            transform: translateY(-6px);
+            transform: translateY(-10px);
           }
-        }
-
-        .hover-image:hover {
-          transform: scale(1.1);
-          filter: brightness(1.1);
-          transition: transform 0.3s ease, filter 0.3s ease;
         }
 
         .mute-button {
           position: fixed;
-          bottom: 30px;
-          right: 10px;
-          background: transparent;
-          color: white;
-          border: none;
+          bottom: 40px;
+          right: 20px;
           font-size: 14px;
+          color: rgba(255, 255, 255, 0.6);
+          background: transparent;
+          border: none;
           cursor: pointer;
-          opacity: 0.8;
-          animation: pulseBlink 2s infinite ease-in-out;
-          z-index: 11;
-          user-select: none;
+          z-index: 100;
+          animation: pulseMute 2s infinite;
+          text-transform: lowercase;
         }
 
-        @keyframes pulseBlink {
-          0%,
-          100% {
-            transform: scale(1);
-            opacity: 0.7;
+        @keyframes pulseMute {
+          0%, 100% {
+            opacity: 0.6;
           }
           50% {
-            transform: scale(1.1);
-            opacity: 1;
+            opacity: 0.9;
           }
+        }
+
+        .counter {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.3);
+          z-index: 100;
+        }
+
+        @keyframes gradientAnimation {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
+        @media (max-width: 768px) {
+          .trust-text { bottom: 70px; font-size: 18px; }
+          .email-button img { height: 35px; }
+          .mute-button, .counter { font-size: 12px; }
+          h2 { font-size: 26px; }
+          p { font-size: 18px; }
         }
       `}</style>
     </div>
