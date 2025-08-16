@@ -15,7 +15,7 @@ const firebaseConfig = {
   measurementId: "G-F9XXKYZMRD",
 };
 
-// Инициализация на Firebase
+// Инициализация на Firebase само ако няма друг app
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getDatabase(app);
 
@@ -101,13 +101,6 @@ export default function Home() {
     bg: "/docs/dogovor-bg.pdf",
     tr: "/docs/dogovor-tr.pdf",
     en: "/docs/dogovor-en.pdf",
-  };
-
-  // Линкове към Wikipedia
-  const trustLinks = {
-    bg: "https://en.wikipedia.org/wiki/Asset_management",
-    tr: "https://tr.wikipedia.org/wiki/Varl%C4%B1k_y%C3%B6netimi",
-    en: "https://en.wikipedia.org/wiki/Asset_management",
   };
 
   useEffect(() => {
@@ -198,7 +191,7 @@ export default function Home() {
         <AnimatedText text={texts[lang].subtitle} keyTrigger={keyTrigger} />
       </p>
 
-      {/* Линк към Wikipedia за доверително управление */}
+      {/* Анимиран текст в средата долу */}
       <div
         style={{
           position: "fixed",
@@ -209,25 +202,15 @@ export default function Home() {
           whiteSpace: "nowrap",
           color: "white",
           fontFamily: '"Times New Roman", serif',
-          pointerEvents: "auto",
+          pointerEvents: "none",
           userSelect: "none",
           zIndex: 5,
         }}
       >
-        <a
-          href={trustLinks[lang]}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            color: "inherit",
-            textDecoration: "none",
-          }}
-        >
-          <AnimatedText text={texts[lang].trust} keyTrigger={keyTrigger} />
-        </a>
+        <AnimatedText text={texts[lang].trust} keyTrigger={keyTrigger} />
       </div>
 
-      {/* Имейл и бутон за договор */}
+      {/* Имейл линк с леко скокче */}
       <div className="email-icon">
         <a
           href="mailto:dimitrov@dimitrovfinance.com"
@@ -254,6 +237,7 @@ export default function Home() {
         </a>
       </div>
 
+      {/* Бутон за договор в горен десен ъгъл със златист цвят, фин черен контур и italic */}
       <button
         onClick={() => window.open(contractLinks[lang], "_blank")}
         style={{
@@ -274,10 +258,7 @@ export default function Home() {
         }}
         aria-label="Open contract"
       >
-        <AnimatedText
-          text={texts[lang].contractButton}
-          keyTrigger={keyTrigger}
-        />
+        <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
       </button>
 
       <button
@@ -289,7 +270,16 @@ export default function Home() {
       </button>
 
       {visits !== null && (
-        <div className="visits-counter" aria-live="polite">
+        <div
+          style={{
+            position: "fixed",
+            bottom: "10px",
+            right: "10px",
+            fontSize: "12px",
+            opacity: 0.6,
+            userSelect: "none",
+          }}
+        >
           {visits}
         </div>
       )}
@@ -306,6 +296,7 @@ export default function Home() {
             background-position: 0% 50%;
           }
         }
+
         @keyframes bounce {
           0%,
           100% {
@@ -315,15 +306,17 @@ export default function Home() {
             transform: translateY(-6px);
           }
         }
+
         .hover-image:hover {
           transform: scale(1.1);
           filter: brightness(1.1);
           transition: transform 0.3s ease, filter 0.3s ease;
         }
+
         .mute-button {
           position: fixed;
-          right: 10px;
           bottom: 30px;
+          right: 10px;
           background: transparent;
           color: white;
           border: none;
@@ -334,15 +327,7 @@ export default function Home() {
           z-index: 11;
           user-select: none;
         }
-        .visits-counter {
-          position: fixed;
-          bottom: 10px;
-          right: 10px;
-          font-size: 12px;
-          opacity: 0.6;
-          user-select: none;
-          z-index: 10;
-        }
+
         @keyframes pulseBlink {
           0%,
           100% {
@@ -354,6 +339,7 @@ export default function Home() {
             opacity: 1;
           }
         }
+
         .email-icon {
           position: fixed;
           bottom: 10px;
@@ -366,9 +352,10 @@ export default function Home() {
           border-radius: 8px;
           animation: bounce 2s infinite ease-in-out;
         }
+
         @media (max-width: 600px) {
           .email-icon {
-            bottom: 50px;
+            bottom: 50px; /* малко над текста доверително управление на капитали */
             left: 15%;
             width: clamp(40px, 6vw, 60px);
             height: clamp(40px, 6vw, 60px);
