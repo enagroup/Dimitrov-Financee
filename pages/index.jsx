@@ -353,7 +353,7 @@ export default function Home() {
         @media (max-width: 600px) {
           .email-icon {
             bottom: 60px;       /* мобилен долу по-нависоко */
-            left: 50%;          /* центриран */
+            left: 15%;          /* центриран */
             transform: translateX(-50%);
             width: clamp(40px, 6vw, 60px);
             height: clamp(40px, 6vw, 60px);
