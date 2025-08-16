@@ -166,7 +166,32 @@ export default function Home() {
         <source src="/sounds/background.mp3" type="audio/mpeg" />
       </audio>
 
-      {/* Изображение */}
+      {/* Бутон „Станете клиент“ над изображението */}
+      <button
+        onClick={() => window.open(contractLinks[lang], "_blank")}
+        className="contract-button"
+        style={{
+          position: "fixed",       // фиксирано спрямо прозореца
+          top: "20px",             // разстояние от горния край
+          right: "20px",           // разстояние от десния край
+          background: "transparent",
+          border: "none",
+          padding: "10px 15px",
+          cursor: "pointer",
+          fontFamily: "'Times New Roman', serif",
+          fontSize: "clamp(16px, 2vw, 20px)",
+          zIndex: 100,             // винаги над другите елементи
+          whiteSpace: "nowrap",
+          color: "#d69d08",
+          fontStyle: "italic",
+          textShadow: "0 0 2px #000",
+        }}
+        aria-label="Open contract"
+      >
+        <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
+      </button>
+
+      {/* ЕДНО изображение */}
       <img
         src="/zaglavna.jpg"
         alt="Заглавна снимка"
@@ -183,29 +208,28 @@ export default function Home() {
         }}
       />
 
-      {/* Бутон „Станете клиент“ над изображението */}
-      <button
-  onClick={() => window.open(contractLinks[lang], "_blank")}
-  style={{
-    position: "fixed",
-    top: "20px",
-    right: "20px",
-    background: "transparent",
-    border: "none",
-    padding: "10px 15px",
-    cursor: "pointer",
-    fontFamily: "'Times New Roman', serif",
-    fontSize: "clamp(16px, 2vw, 20px)",
-    zIndex: 100,
-    whiteSpace: "nowrap",
-    color: "#d69d08",
-    fontStyle: "italic",
-    textShadow: "0 0 2px #000",
-  }}
-  aria-label="Open contract"
->
-  <AnimatedText text={texts[lang].contractButton} keyTrigger={keyTrigger} />
-</button>
+      <style jsx>{`
+        @media (max-width: 600px) {
+          .hover-image {
+            order: 2; /* изображението пада надолу */
+            margin-top: 15px;
+          }
+
+          .contract-button {
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            margin-top: 15px;
+          }
+
+          .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+        }
+      `}</style>
+
       {/* Заглавен текст */}
       <h2
         style={{
@@ -248,22 +272,54 @@ export default function Home() {
 
       {/* Икона за мейл */}
       <div className="email-icon">
-        <a
-          href="mailto:dimitrov@dimitrovfinance.com"
-          aria-label="Email Dimitrov Finance"
-        >
-          <img
-            src="/images/email-gold.png"
-            alt="dimitrov@dimitrovfinance.com"
-            style={{
-              height: "50px",
-              width: "auto",
-              display: "block",
-              borderRadius: "8px",
-            }}
-          />
-        </a>
-      </div>
+  <a href="mailto:dimitrov@dimitrovfinance.com" aria-label="Email Dimitrov Finance">
+    <img
+      src="/images/email-gold.png"
+      alt="dimitrov@dimitrovfinance.com"
+      style={{
+        height: "50px",
+        width: "auto",
+        display: "block",
+        borderRadius: "8px",
+      }}
+    />
+  </a>
+</div>
+
+<style jsx>{`
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .email-icon {
+    position: fixed;
+    bottom: 10px;
+    left: 10px; /* винаги вляво */
+    cursor: pointer;
+    z-index: 10;
+    width: auto;
+    height: auto;
+  }
+
+  .email-icon img {
+    width: 50px;
+    height: auto;
+    border-radius: 8px;
+    animation: bounce 2s infinite ease-in-out;
+  }
+
+  @media (max-width: 600px) {
+    .email-icon {
+      position: relative !important;
+      bottom: auto !important;
+      left: auto !important;
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+    }
+  }
+`}</style>
 
       {/* Бутон mute/unmute */}
       <button
@@ -304,8 +360,13 @@ export default function Home() {
         }
 
         @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-6px); }
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-6px);
+          }
         }
 
         .hover-image:hover {
@@ -330,37 +391,16 @@ export default function Home() {
         }
 
         @keyframes pulseBlink {
-          0%, 100% { transform: scale(1); opacity: 0.7; }
-          50% { transform: scale(1.1); opacity: 1; }
+          0%,
+          100% {
+            transform: scale(1);
+            opacity: 0.7;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 1;
+          }
         }
-
-        .email-icon {
-          position: fixed;
-          bottom: 10px;
-          left: 2%;
-          cursor: pointer;
-          z-index: 10;
-          width: auto;
-          height: auto;
-        }
-
-        .email-icon img {
-          width: 50px;
-          height: auto;
-          border-radius: 8px;
-          animation: bounce 2s infinite ease-in-out;
-        }
-
-        @media (max-width: 600px) {
-  .email-icon {
-    position: relative !important;
-    bottom: auto !important;
-    left: auto !important;
-    margin-top: 15px;
-    display: flex;
-    justify-content: center;
-  }
-}
       `}</style>
     </div>
   );
